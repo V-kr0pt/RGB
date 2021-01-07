@@ -1,10 +1,13 @@
 #include <Arduino.h>
-#include <functions.cpp>
+
 
 #define R 10 //pino conectado ao LED vermelho
 #define G 9 //pino conectado ao LED verde
 #define B 11 //pino conectado ao LED azul
 
+
+//Definindo algumas variáveis necessárias para o funcionamento do algoritmo
+int state = 0; //variável que define o estado dos leds
 
 void brilho(int R_brilho, int G_brilho, int B_brilho){
   //função que envia o sinal analógico para o pino do arduino
@@ -84,52 +87,43 @@ void Efeito(String Efeito, String Cor, int Espera=50, int Repeticao = 10){
 }
 
 
-void standart(){
+void fade_standart(){
 
   Efeito("fade","vermelho", 25);
-    delay(200);
-    Efeito("fade", "amarelo", 25);
-    delay(200);
-    Efeito("fade", "verde", 25);
-    delay(200);
-    Efeito("fade", "lightGreen", 25);
-    delay(200);
-    Efeito("fade", "azul", 25);
-    delay(200); 
-    Efeito("fade", "slateBlue", 25);
-    delay(200);
-    Efeito("fade", "aqua", 25);
-    delay(200);
-    Efeito("fade", "powderblue", 25);
-    delay(200);
-    Efeito("fade", "deepSkyBlue", 25);
-    delay(200);
-    Efeito("fade", "skyblue", 25);
-    delay(200);
-    Efeito("fade", "roxo", 25);
-    delay(1000); 
-    
-    //Mudança de cor
-    for(int i=0; i<5; i++){
-      cor("vermelho");
-      delay(2000);
-      cor("rosa");
-      delay(2000);
-      cor("thistle");
-      delay(2000);
-      cor("roxo");
-      delay(2000);
-      cor("azul");
-      delay(2000);
-      cor("powderblue");
-      delay(2000);
-      cor("aqua");
-      delay(2000);
-      cor("verde");
-      delay(2000);
-      cor("amarelo");
-      delay(2000);
-    }
+  Efeito("fade", "amarelo", 25);
+  Efeito("fade", "verde", 25);
+  Efeito("fade", "lightGreen", 25);
+  Efeito("fade", "azul", 25);
+  Efeito("fade", "slateBlue", 25);
+  Efeito("fade", "aqua", 25);
+  Efeito("fade", "powderblue", 25);
+  Efeito("fade", "deepSkyBlue", 25);
+  Efeito("fade", "skyblue", 25);
+  Efeito("fade", "roxo", 25);
+
+}
+
+void cor_standart(){
+  //Mudança de cor
+  for(int i=0; i<5; i++){
+    cor("vermelho");
+    delay(2000);
+    cor("rosa");
+    delay(2000);
+    cor("thistle");
+    delay(2000);
+    cor("roxo");
+    delay(2000);
+    cor("azul");
+    delay(2000);
+    cor("powderblue");
+    delay(2000);
+    cor("aqua");
+    delay(2000);
+    cor("verde");
+    delay(2000);
+    cor("amarelo");
+  }
 
 }
 
@@ -139,11 +133,67 @@ void setup() {
   pinMode(R, OUTPUT);
   pinMode(G, OUTPUT);
   pinMode(B, OUTPUT);
+
+  //inicializando a comunicação serial
+  Serial.begin(9600);
+  while(Serial.read() !='1'){}
+  Serial.println("Seja bem vindo!");
+  Serial.println("------------------------------------\n");
+  cor("azul");
+  delay(500);
+  cor("vermelho");
+  delay(500);
+  cor("verde");
+  delay(500);
+  brilho(0,0,0);
+  delay(1000);
+  Serial.println("Opções:\n0- fade_standart\n1- cor_standart\n2- azul\n3- vermelho\n4- verde");
+  Serial.println("5- amarelo\n6- rosa\n7- aqua\n8- powder blue\n9- verde claro\noutro- desliga");
+  
+  
 }
 
 void loop() {
   //código principal
-  standart();
-  
-}
+  //standart();
 
+  if(Serial.available()>0){
+    state = Serial.read();
+  }
+
+  switch(state){
+    case '0':
+      fade_standart();      
+      break;  
+    case '1':
+      cor_standart();
+      break;
+    case '2':
+      cor("azul");
+      break;
+    case '3':
+      cor("vermelho");
+      break;
+    case '4':
+      cor("verde");
+      break;
+    case '5':
+      cor("amarelo");
+      break;
+    case '6':
+      cor("rosa");
+      break;
+    case '7':
+      cor("aqua");
+      break;
+    case '8':
+      cor("powderblue");
+      break;
+    case '9':
+      cor("lightgreen");
+      break;
+    default:
+      brilho(0,0,0);         
+      break;
+  }
+}
